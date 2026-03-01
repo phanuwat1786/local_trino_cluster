@@ -1,0 +1,37 @@
+services:
+
+  trino-coordinator:
+    image: trinodb/trino:479
+    container_name: trino-coordinator
+    ports:
+      - "8080:8080"
+    env_file: .env
+    volumes:
+      - ./trino_config/coordinator/config.properties:/etc/trino/config.properties
+      - ./trino_config/catalog:/etc/trino/catalog
+      - ./etc/ggs-cred.json:/etc/cred/ggs-cred.json
+      # - ./trino_config/coordinator/init.sql:/etc/trino/init.sql
+
+  trino-worker:
+    image: trinodb/trino:479
+    # container_name: trino-worker-1
+    env_file: .env
+    volumes:
+      - ./trino_config/worker/config.properties:/etc/trino/config.properties
+      - ./trino_config/catalog:/etc/trino/catalog
+      - ./etc/ggs-cred.json:/etc/cred/ggs-cred.json
+    depends_on:
+      - trino-coordinator
+    
+  # trino-worker-2:
+  #   image: trinodb/trino:479
+  #   container_name: trino-worker-2
+  #   volumes:
+  #     - ./trino_config/worker/config.properties:/etc/trino/config.properties
+  #     - ./trino_config/catalog:/etc/trino/catalog
+  #     - ./etc/ggs-cred.json:/etc/cred/ggs-cred.json
+  #   depends_on:
+  #     - trino-coordinator
+
+networks:
+  default:
